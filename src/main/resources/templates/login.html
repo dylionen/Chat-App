@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.0/handlebars.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js"></script>
+    <!--    libs for stomp and sockjs-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <!--    end libs for stomp and sockjs-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet"
+          type="text/css">
+
+
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <script src="/js/bootstrap.bundle.js"></script>
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+
+<br/><br/>
+<div class="containerLogin">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+
+            <div th:if="${param.error}">
+                <div class="alert alert-danger">Nieprawidłowy login lub hasło</div>
+            </div>
+            <div th:if="${param.logout}">
+                <div class="alert alert-success"> Zostałeś wylogowany.</div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">Login Page</h2>
+                </div>
+                <div class="card-body">
+                    <form
+                            method="post"
+                            role="form"
+                            th:action="@{/login}"
+                            class="form-horizontal"
+                    >
+                        <div class="form-group mb-3">
+                            <label class="control-label">Login</label>
+                            <input
+                                    type="text"
+                                    id="username"
+                                    name="username"
+                                    class="form-control"
+                                    placeholder="Write your login"
+                            />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="control-label">Password</label>
+                            <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    class="form-control"
+                                    placeholder="Write your password"
+                            />
+                        </div>
+                        <div class="form-group mb-3">
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </div>
+                    </form>
+                    <a th:href="@{/register}"><button class="btn btn-primary">Register</button></a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
