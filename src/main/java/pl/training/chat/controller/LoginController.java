@@ -2,6 +2,7 @@ package pl.training.chat.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -62,6 +63,12 @@ public class LoginController {
     @PostMapping("/stay-login")
     public ResponseEntity<String> stayLogin(@RequestParam(name = "name") String name) {
         loggedUserService.stayLogin(name);
+        return ResponseEntity.ok("ok");
+    }
+
+    @PostMapping("/update-avatar")
+    public ResponseEntity<String> updateAvatar(@RequestParam(name = "avatar") String avatar) {
+        userService.updateAvatar(avatar, SecurityContextHolder.getContext().getAuthentication().getName());
         return ResponseEntity.ok("ok");
     }
 

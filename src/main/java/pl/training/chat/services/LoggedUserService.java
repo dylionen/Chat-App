@@ -1,10 +1,9 @@
 package pl.training.chat.services;
 
 import jakarta.transaction.Transactional;
-import org.apache.coyote.Response;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
+import pl.training.chat.login.User;
+import pl.training.chat.login.UserRepository;
 import pl.training.chat.model.LoggedUser;
 import pl.training.chat.repository.LoggedUserRepository;
 
@@ -17,21 +16,24 @@ import java.util.Optional;
 public class LoggedUserService {
 
     private final LoggedUserRepository loggedUserRepository;
+    private final UserRepository userRepository;
 
-    public LoggedUserService(LoggedUserRepository loggedUserRepository) {
+    public LoggedUserService(LoggedUserRepository loggedUserRepository, UserRepository userRepository) {
         this.loggedUserRepository = loggedUserRepository;
+        this.userRepository = userRepository;
     }
 
-    public Boolean userExists(String username) {
-        return loggedUserRepository.findUserByUsername(username).isPresent();
+    public Boolean userExists(String userName) {
+        return loggedUserRepository.findLoggedUserByUser(userRepository.findByName(userName
+
+        )).isPresent();
     }
 
     @Transactional
-    public void createUser(String user) throws Exception {
-        if (loggedUserRepository.findUserByUsername(user).isPresent()) {
-            // throw new Exception("User exists");
-        } else {
-            loggedUserRepository.save(new LoggedUser().setUsername(user).setRefreshDate(new Date()));
+    public void createUser(String userName) throws Exception {
+        if (loggedUserRepository.findLoggedUserByUser(userRepository.findByName(userName)).isEmpty()) {
+            User dbUser = userRepository.findByName(userName);
+            loggedUserRepository.save(new LoggedUser().setUser(dbUser).setRefreshDate(new Date()));
         }
     }
 
@@ -53,11 +55,12 @@ public class LoggedUserService {
     }
 
     public void stayLogin(String userName) {
-        Optional<LoggedUser> user = loggedUserRepository.findUserByUsername(userName);
+        Optional<LoggedUser> user = loggedUserRepository.findLoggedUserByUser(userRepository.findByName(userName));
         if (user.isPresent()) {
             LoggedUser loggedUser = user.get();
             loggedUser.setRefreshDate(new Date());
             loggedUserRepository.save(loggedUser);
         }
     }
+
 }

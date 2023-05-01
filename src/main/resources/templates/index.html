@@ -20,19 +20,43 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
 
-    const userName = /*[[${userName}]]*/ 'null';
+    const userName = /*[[${userView.userName}]]*/ 'null';
     var FILE = null;
-    $( document ).ready(function() {
-        if(userName != null) {
+    var AVATAR = null;
+    $(document).ready(function () {
+        if (userName != null) {
             registration(userName);
             fetchAll();
             repeatMethods();
         }
-        $("#files").change(function() {
+        $("#files").change(function () {
             getBase64(this.files[0]).then(
                 data => FILE = data
             );
             console.log(FILE);
+        });
+        $("#avatars").change(function () {
+            getBase64(this.files[0]).then(
+                data => {
+                    $('#avatarImg').attr('src', data);
+                    $.ajax({
+                        url: "/update-avatar",
+                        dataType: "json",
+                        method: "post",
+                        xhrFields: {
+                            withCredentials: true
+                        },
+
+                        data: {
+                            avatar: data
+                        }
+                    })
+                        .done(res => {
+                            console.log(res);
+                        })
+
+                }
+            );
         });
     });
 
@@ -44,7 +68,8 @@
             reader.onerror = error => reject(error);
         });
     }
-    function repeatMethods(){
+
+    function repeatMethods() {
         repeatInterval();
         repeatStayLogin();
     }
@@ -52,11 +77,12 @@
     function repeatInterval() {
         intervalID = setInterval(fetchAll, 30000);
     }
+
     function repeatStayLogin() {
         intervalID = setInterval(stayLogin, 10000);
     }
 
-    function stayLogin(){
+    function stayLogin() {
         $.ajax({
             url: "/stay-login",
             dataType: "json",
@@ -81,9 +107,17 @@
     <div class="people-list" id="people-list">
         <div class="search">
             <a>Logged as: <strong sec:authentication="name"></strong></a>
-            <!--            <input id="userName" placeholder="search" type="text"/>-->
-<!--            <button th:onclick="registration([[${userName}]])">Enter the chat</button>-->
-<!--            <button onclick="fetchAll()">Refresh</button>-->
+            <a th:href="@{/logout}">
+                <button class="btn btn-close"></button>
+            </a>
+        </div>
+        <div id="avatarDiv">
+            <label for="avatars" class="btn">
+                <img alt="avatar" id="avatarImg" height="55px"
+                     th:src="${userView.avatar != null ? userView.avatar :'/png/user-image.png' }"
+                     width="55px" onclick=""/>
+            </label>
+            <input id="avatars" style="visibility:hidden;" type="file">
         </div>
         <ul class="list" id="usersList">
 
@@ -94,6 +128,7 @@
     <div class="chat">
         <div class="chat-header clearfix">
             <img alt="avatar" height="55px"
+                 id="friendAvatar"
                  src="/png/user-image.png"
                  width="55px"/>
 
@@ -114,11 +149,11 @@
         <div class="chat-message clearfix">
             <textarea id="message-to-send" name="message-to-send" placeholder="Type your message" rows="3"></textarea>
 
-                <label for="files" class="btn"><i class="fa fa-file-image-o"> </i></label>
-                <input id="files" style="visibility:hidden;" type="file">
+            <label for="files" class="btn"><i class="fa fa-file-image-o"> </i></label>
+            <input id="files" style="visibility:hidden;" type="file">
 
-<!--            <i class="fa fa-file-o"></i> &nbsp;&nbsp;&nbsp;-->
-<!--            <i class="fa fa-file-image-o"></i>-->
+            <!--            <i class="fa fa-file-o"></i> &nbsp;&nbsp;&nbsp;-->
+            <!--            <i class="fa fa-file-image-o"></i>-->
 
             <button id="sendBtn">Send</button>
 
@@ -148,7 +183,7 @@
         </div>
         <div class="message other-message float-right">
             {{messageOutput}}
-            <img src ='{{image}}' width="350px" height="400px">
+            <img src='{{image}}' width="350px" height="400px">
         </div>
     </li>
 </script>
@@ -161,7 +196,7 @@
         </div>
         <div class="message my-message">
             {{response}}
-            <img src ='{{image}}' width="350px" height="400px">
+            <img src='{{image}}' width="350px" height="400px">
         </div>
 
     </li>

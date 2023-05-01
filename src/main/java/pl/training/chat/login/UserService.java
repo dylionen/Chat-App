@@ -10,4 +10,5 @@ public interface UserService {
 
     User findUserByName(String name);
 
+    void updateAvatar(String avatar, String name);
 }

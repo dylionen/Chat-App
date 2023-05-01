@@ -1,8 +1,16 @@
 package pl.training.chat.login;
+
+import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import pl.training.chat.model.LoggedUser;
 
+import java.nio.charset.StandardCharsets;
+import java.sql.Clob;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,6 +55,16 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByName(name);
     }
 
+    public UserView findUserViewByName(String name) {
+        User user = userRepository.findByName(name);
+        if (user != null) {
+            return new UserView()
+                    .setUserName(user.getName())
+                    .setAvatar(user.getAvatar() != null ? new String(user.getAvatar(), StandardCharsets.UTF_8) : null);
+        }
+        return null;
+    }
+
     @Override
     public List<UserDto> findAllUsers() {
         List<User> users = userRepository.findAll();
@@ -69,5 +87,16 @@ public class UserServiceImpl implements UserService {
         Role role = new Role();
         role.setName("ROLE_USER");
         return roleRepository.save(role);
+    }
+
+    @Override
+    @Transactional
+    public void updateAvatar(String avatar, String name) {
+        Optional<User> userOptional = Optional.ofNullable(userRepository.findByName(name));
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setAvatar(avatar.getBytes());
+            userRepository.save(user);
+        }
     }
 }

@@ -6,9 +6,13 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import pl.training.chat.login.UserView;
 import pl.training.chat.model.LoggedUser;
+import pl.training.chat.model.LoggedUserView;
 import pl.training.chat.services.LoggedUserService;
 
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,8 +39,17 @@ public class UsersController {
     }
 
     @GetMapping("/fetchAllUsers")
-    public Set<String> fetchAll() {
-        return loggedUserService.getAllUsers().stream().map(LoggedUser::getUsername).collect(Collectors.toSet());
+    public List<LoggedUserView> fetchAll() {
+        return loggedUserService
+                .getAllUsers()
+                .stream()
+                .map(loggedUser ->
+                        new LoggedUserView()
+                                .setUserName(loggedUser.getUser().getName())
+                                .setAvatar(loggedUser
+                                        .getUser()
+                                        .getAvatar() != null ?
+                                        new String(loggedUser.getUser().getAvatar(), StandardCharsets.UTF_8) : null))
+                .toList();
     }
-
 }

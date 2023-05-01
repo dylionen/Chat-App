@@ -2,6 +2,7 @@ package pl.training.chat.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import pl.training.chat.login.User;
 
 import java.util.Date;
 
@@ -14,8 +15,8 @@ public class LoggedUser {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(unique = true)
-    private String username;
+    @OneToOne
+    private User user;
 
     private Date refreshDate;
 
@@ -24,13 +25,14 @@ public class LoggedUser {
         return this;
     }
 
-    public LoggedUser setUsername(String username) {
-        this.username = username;
+    public LoggedUser setRefreshDate(Date refreshDate) {
+        this.refreshDate = refreshDate;
         return this;
     }
 
-    public LoggedUser setRefreshDate(Date refreshDate) {
-        this.refreshDate = refreshDate;
+
+    public LoggedUser setUser(User user) {
+        this.user = user;
         return this;
     }
 }

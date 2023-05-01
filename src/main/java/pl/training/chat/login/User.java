@@ -2,7 +2,9 @@ package pl.training.chat.login;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.Nationalized;
 
+import java.sql.Clob;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,8 @@ public class User {
     private String name;
     @Column(nullable = false)
     private Boolean active;
+    @Lob
+    private byte[] avatar;
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "users_roles",
